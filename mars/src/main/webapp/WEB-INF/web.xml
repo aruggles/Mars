@@ -58,6 +58,22 @@
     </filter-mapping>
     <filter-mapping>
         <filter-name>struts2</filter-name>
-        <url-pattern>/*</url-pattern>
+        <url-pattern>/login</url-pattern>
+    </filter-mapping>
+    <filter-mapping>
+        <filter-name>struts2</filter-name>
+        <url-pattern>/logout</url-pattern>
+    </filter-mapping>
+    <filter-mapping>
+        <filter-name>struts2</filter-name>
+        <url-pattern>/logout-success</url-pattern>
+    </filter-mapping>
+    <filter-mapping>
+        <filter-name>struts2</filter-name>
+        <url-pattern>/index</url-pattern>
+    </filter-mapping>
+    <filter-mapping>
+        <filter-name>struts2</filter-name>
+        <url-pattern>/action/*</url-pattern>
     </filter-mapping>
 </web-app>

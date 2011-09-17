@@ -6,7 +6,10 @@
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
 		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
 		http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.0.xsd">
-    
+
+    <context:annotation-config/>
+    <context:component-scan base-package="net.adamruggles.mars" />
+        
     <sec:global-method-security secured-annotations="enabled" />
 
     <bean id="passwordEncoder" class="org.springframework.security.authentication.encoding.ShaPasswordEncoder">
@@ -28,7 +31,7 @@
         <sec:form-login login-page="/login"
             login-processing-url="/login-process"
             default-target-url="/index"
-            authentication-failure-url="/login.jsp?login_error=1" />
+            authentication-failure-url="/login?error=true" />
         <sec:logout logout-url="/logout" logout-success-url="/logout-success" />
     </sec:http>
     

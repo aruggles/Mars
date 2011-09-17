@@ -2,9 +2,9 @@
     <div id="container">
         <%@include file="../includes/header.jsp" %>
         <div id="main" role="main">
-            <c:if test="${not empty param.login_error}">
+            <s:if test="error">
 	            <p class="error">${SPRING_SECURITY_LAST_EXCEPTION.message}</p>
-	        </c:if>
+	        </s:if>
 	        <div>
 	            <p>Login Form:</p>
 	            <form id="login" action="<c:url value="/login-process" />" method="post">

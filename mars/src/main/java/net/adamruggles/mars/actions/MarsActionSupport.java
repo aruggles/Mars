@@ -15,8 +15,13 @@
  */
 package net.adamruggles.mars.actions;
 
+import java.security.Principal;
+
+import javax.servlet.http.HttpServletRequest;
+
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Actions;
+import org.apache.struts2.interceptor.ServletRequestAware;
 
 import com.opensymphony.xwork2.ActionSupport;
 
@@ -27,11 +32,19 @@ import com.opensymphony.xwork2.ActionSupport;
  *
  * Created on Sep 10, 2011 at 7:54:46 PM
  */
-public class MarsActionSupport extends ActionSupport {
+public class MarsActionSupport extends ActionSupport implements ServletRequestAware {
     /**
      * Serial Version UID.
      */
     private static final long serialVersionUID = -4465526881297451839L;
+    /**
+     * Used to track errors.
+     */
+    private boolean error = false;
+    /**
+     * The HTTP Servlet Request.
+     */
+    private HttpServletRequest request;
     /**
      * Default page title.
      */
@@ -50,11 +63,43 @@ public class MarsActionSupport extends ActionSupport {
         return SUCCESS;
     }
     /**
+     * Returns the security principal user.
+     * @return The Principal or null.
+     */
+    public Principal getPrincipal() {
+        if (request == null) {
+            return null;
+        }
+        return request.getUserPrincipal();
+    }
+    /**
      * Returns title.
      * @return the title.
      */
     public String getTitle() {
         return title;
+    }
+    /**
+     * Returns error.
+     * @return the error.
+     */
+    public boolean isError() {
+        return error;
+    }
+    /**
+     * Sets error.
+     * @param error the error to set.
+     */
+    public void setError(final boolean error) {
+        this.error = error;
+    }
+    /**
+     * {@inheritDoc}
+     * @see org.apache.struts2.interceptor.ServletRequestAware#setServletRequest(javax.servlet.http.HttpServletRequest)
+     */
+    @Override
+    public void setServletRequest(final HttpServletRequest request) {
+        this.request = request;
     }
     /**
      * Sets title.
