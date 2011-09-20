@@ -59,10 +59,6 @@ public class Post implements Serializable {
     @Id @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
     /**
-     * The subject of the post.
-     */
-    private String subject;
-    /**
      * The user that created the post.
      */
     @ManyToOne
@@ -90,11 +86,11 @@ public class Post implements Serializable {
         } else if (!body.equals(other.body)) {
             return false;
         }
-        if (subject == null) {
-            if (other.subject != null) {
+        if (id == null) {
+            if (other.id != null) {
                 return false;
             }
-        } else if (!subject.equals(other.subject)) {
+        } else if (!id.equals(other.id)) {
             return false;
         }
         return true;
@@ -121,13 +117,6 @@ public class Post implements Serializable {
         return id;
     }
     /**
-     * Returns subject.
-     * @return the subject.
-     */
-    public String getSubject() {
-        return subject;
-    }
-    /**
      * Returns user.
      * @return the user.
      */
@@ -140,10 +129,10 @@ public class Post implements Serializable {
      */
     @Override
     public int hashCode() {
-        final int prime = 31;
+        final int prime = 443;
         int result = 1;
         result = prime * result + ((body == null) ? 0 : body.hashCode());
-        result = prime * result + ((subject == null) ? 0 : subject.hashCode());
+        result = prime * result + ((id == null) ? 0 : id.hashCode());
         return result;
     }
     /**
@@ -166,13 +155,6 @@ public class Post implements Serializable {
      */
     public void setId(final Long id) {
         this.id = id;
-    }
-    /**
-     * Sets subject.
-     * @param subject the subject to set.
-     */
-    public void setSubject(final String subject) {
-        this.subject = subject;
     }
     /**
      * Sets user.

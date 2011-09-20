@@ -15,13 +15,10 @@
  */
 package net.adamruggles.mars.service;
 
-import java.io.UnsupportedEncodingException;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.persistence.PersistenceException;
+import javax.persistence.TransactionRequiredException;
 
 import net.adamruggles.mars.dao.UserDAO;
 import net.adamruggles.mars.entity.User;
@@ -36,7 +33,7 @@ import org.springframework.security.authentication.encoding.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * An Implementation of the user service.
+ * An Implementation of the {@link UserService}.
  * @author Adam
  * @version $Id$
  *
@@ -86,11 +83,17 @@ public class UserServiceImpl implements UserService {
         if (userVO == null || userVO.getId() == null) {
             throw new ServiceException("Attempting to delete user without a user id.");
         }
-        final User user = userDAO.findById(userVO.getId());
-        if (user == null) {
-            throw new ServiceException("User not found.");
+        try {
+            final User user = userDAO.findById(userVO.getId());
+            if (user == null) {
+                throw new ServiceException("User not found.");
+            }
+            userDAO.remove(user);
+        } catch (final TransactionRequiredException transRequiredEx) {
+            throw new ServiceException(transRequiredEx);
+        } catch (final IllegalArgumentException illegalArgEx) {
+            throw new ServiceException(illegalArgEx);
         }
-        userDAO.remove(user);
     }
     /**
      * {@inheritDoc}
@@ -99,13 +102,19 @@ public class UserServiceImpl implements UserService {
     @Override @Transactional(readOnly = true)
     public UserVO get(final Long id) {
         if (id == null) {
-            throw new ServiceException("Attempting to return user without a id.");
+            throw new ServiceException("Attempting to return user without an id.");
         }
-        final User user = userDAO.findById(id);
-        if (user == null) {
-            return null;
+        try {
+            final User user = userDAO.findById(id);
+            if (user == null) {
+                return null;
+            }
+            return new UserVO(user);
+        } catch (final TransactionRequiredException transRequiredEx) {
+            throw new ServiceException(transRequiredEx);
+        } catch (final IllegalArgumentException illegalArgEx) {
+            throw new ServiceException(illegalArgEx);
         }
-        return new UserVO(user);
     }
     /**
      * {@inheritDoc}
@@ -121,24 +130,6 @@ public class UserServiceImpl implements UserService {
             return null;
         }
         return new UserVO(user);
-    }
-    /**
-     * Returns a hashed version of the password.
-     * @param password The password to hash.
-     * @return a hashed password.
-     */
-    private String getHash(final String password) {
-        try {
-            final byte[] message = password.getBytes("UTF-8");
-            final MessageDigest digest = MessageDigest.getInstance("SHA-256");
-            digest.reset();
-            digest.update("Sasdf#$A7T0^00asdf0000!@1".getBytes());
-            return new String(digest.digest(message), "UTF-8");
-        } catch (final UnsupportedEncodingException ex) {
-            throw new ServiceException("Unable to hash the password.", ex);
-        } catch (final NoSuchAlgorithmException ex) {
-            throw new ServiceException("Unable to hash the password.", ex);
-        }
     }
     /**
      * Sets passwordEncoder.
@@ -163,18 +154,24 @@ public class UserServiceImpl implements UserService {
         if (userVO == null || userVO.getId() == null) {
             throw new ServiceException("Attempting to update user without a user id.");
         }
-        final User user = userDAO.findById(userVO.getId());
-        if (user == null) {
-            throw new ServiceException("User not found.");
+        try {
+            final User user = userDAO.findById(userVO.getId());
+            if (user == null) {
+                throw new ServiceException("User not found.");
+            }
+            // If the username changes the password must change as well.
+            if (StringUtils.isNotEmpty(userVO.getPassword())
+                    && StringUtils.isNotEmpty(userVO.getUsername())) {
+                user.setUsername(userVO.getUsername());
+                user.setPassword(passwordEncoder.encodePassword(userVO.getPassword(), userVO.getUsername()));
+            }
+            // Update the values from the data store.
+            userVO.setUsername(user.getUsername());
+            userVO.setPassword(user.getPassword());
+        } catch (final TransactionRequiredException transRequiredEx) {
+            throw new ServiceException(transRequiredEx);
+        } catch (final IllegalArgumentException illegalArgEx) {
+            throw new ServiceException(illegalArgEx);
         }
-        if (StringUtils.isNotEmpty(userVO.getPassword())) {
-            user.setPassword(getHash(userVO.getPassword()));
-        }
-        if (StringUtils.isNotEmpty(userVO.getUsername())) {
-            user.setUsername(getHash(userVO.getUsername()));
-        }
-        // Update the values from the data store.
-        userVO.setUsername(user.getUsername());
-        userVO.setPassword(user.getPassword());
     }
 }

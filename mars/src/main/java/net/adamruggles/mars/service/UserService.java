@@ -30,14 +30,15 @@ public interface UserService {
      * Creates a user.
      * The id and hashed password will be populated when returning from this method.
      * @param userVO The user to create.
-     * @throws ServiceException if an error occurs saving the user object.
+     * @throws ServiceException if an error occurs saving the user.
      */
     void create(UserVO userVO) throws ServiceException;
     /**
-     * Delets a user.
-     * @param userVO The user to delete.
+     * Deletes a user.
+     * @param userVO The user to delete. ID is a required field.
+     * @throws ServiceException If the an error occurs deleting the user.
      */
-    void delete(UserVO userVO);
+    void delete(UserVO userVO) throws ServiceException;
     /**
      * Returns a user by id.
      * @param id The id of the user.
@@ -52,8 +53,9 @@ public interface UserService {
     UserVO getByUsername(String username);
     /**
      * Updates a user.
-     * Any fields that are null will not be updated.
+     * Any fields that are null will not be updated. ID is a required field.
      * @param userVO The user to update.
+     * @throws ServiceException if an error occurs updating the user.
      */
-    void update(UserVO userVO);
+    void update(UserVO userVO) throws ServiceException;
 }
